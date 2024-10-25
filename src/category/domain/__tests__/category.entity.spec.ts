@@ -1,4 +1,4 @@
-import { Category } from '../domain/category.entity';
+import { Category } from '../category.entity';
 
 describe('Category Unit Tests', () => {
   it('Should create a new category', () => {
