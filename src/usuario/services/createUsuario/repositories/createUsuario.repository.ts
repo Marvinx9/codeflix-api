@@ -1,53 +1,58 @@
-import { PrismaService } from 'src/infra/database/prisma.service';
-import { createUserDataDto } from '../../dto/createUserData.dto';
-import { CreateUserInputDto } from '../createUsuario/dto/createUsuarioInput.dto';
 import { Injectable } from '@nestjs/common';
+import { DataBaseService } from 'src/shared/database/postgres/database.service';
+import { CreateUsuarioInputDto } from '../dto/createUsuarioInput.dto';
 
 @Injectable()
 export class CreateUsuarioRepository {
-    constructor(private prismaService: PrismaService) {}
+    constructor(private dataBaseService: DataBaseService) {}
 
-    async findById(id: string): Promise<createUserDataDto | null> {
-        return await this.prismaService.user.findUnique({
-            where: {
-                id,
-            },
-        });
+    async verifyDuplicity(email: string): Promise<number> {
+        const sql = `
+        SELECT
+            id
+        FROM usuarios u
+        WHERE UPPER(email) = $1
+        `;
+
+        const binds = [email.toUpperCase()];
+
+        const result = await this.dataBaseService.query<{ id: number }>(
+            sql,
+            binds,
+        );
+
+        return result[0]?.id ?? undefined;
     }
 
-    async findByUsername(username: string): Promise<createUserDataDto | null> {
-        return await this.prismaService.user.findUnique({
-            where: {
-                username,
-            },
-        });
-    }
+    async createUsuario(
+        id: string,
+        data: CreateUsuarioInputDto,
+    ): Promise<void> {
+        const sql = `
+        INSERT INTO usuarios
+        (
+            ID,
+            USERNAME,
+            EMAIL,
+            PASSWORD,
+            NAME
+        ) VALUES (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5
+        )
+            `;
 
-    async findByUsernameOrEmail(
-        username: string,
-        email: string,
-    ): Promise<createUserDataDto | null> {
-        return await this.prismaService.user.findFirst({
-            where: {
-                OR: [{ username }, { email }],
-            },
-        });
-    }
+        const binds = [
+            id,
+            data.username.toUpperCase(),
+            data.email.toUpperCase(),
+            data.password,
+            data.name.toUpperCase(),
+        ];
 
-    async save(data: CreateUserInputDto): Promise<createUserDataDto> {
-        return await this.prismaService.user.create({
-            data,
-        });
-    }
-
-    async uploadAvatar(id: string, path: string): Promise<void> {
-        await this.prismaService.user.update({
-            data: {
-                avatarUrl: path,
-            },
-            where: {
-                id,
-            },
-        });
+        await this.dataBaseService.query(sql, binds);
     }
 }

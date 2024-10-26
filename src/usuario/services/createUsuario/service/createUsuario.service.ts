@@ -1,29 +1,44 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { hash } from 'bcrypt';
-import { CreateUserInputDto } from '../dto/createUsuarioInput.dto';
-import { IUserRepository } from './repositories/user.repository';
+import {
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+} from '@nestjs/common';
+import { CreateUsuarioRepository } from '../repositories/createUsuario.repository';
+import { CreateUsuarioInputDto } from '../dto/createUsuarioInput.dto';
+import { v4 as uuidv4 } from 'uuid';
+
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CreateUsuarioService {
-    private readonly logger = new Logger(CreateUserService.name);
-    constructor(private userRepository: IUserRepository) {}
+    constructor(
+        private readonly createUsuarioRepository: CreateUsuarioRepository,
+    ) {}
 
-    async execute(data: CreateUserInputDto) {
-        const user = await this.userRepository.findByUsernameOrEmail(
-            data.username,
-            data.email,
-        );
+    async execute(data: CreateUsuarioInputDto) {
+        try {
+            const usuario = await this.createUsuarioRepository.verifyDuplicity(
+                data.email,
+            );
 
-        if (user) {
-            this.logger.error(`User ${data.username} already exists... `, data);
-            throw new BadRequestException('User already exists!');
+            if (usuario) {
+                throw new BadRequestException(
+                    'Usuário já criado com esse e-mail',
+                );
+            }
+
+            data.password = await bcrypt.hash(data.password, 10);
+
+            const id = uuidv4();
+
+            await this.createUsuarioRepository.createUsuario(id, data);
+        } catch (error) {
+            if (error instanceof BadRequestException) {
+                throw error;
+            }
+            throw new InternalServerErrorException(
+                'Ocorreu um erro ao criar o usuário. Tente novamente!',
+            );
         }
-
-        const password = await hash(data.password, 10);
-
-        return await this.userRepository.save({
-            ...data,
-            password,
-        });
     }
 }

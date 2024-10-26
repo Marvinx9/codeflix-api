@@ -1,5 +1,7 @@
+import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/shared/database/postgres/database.service';
 
+@Injectable()
 export class ValidateUsuarioRepository {
     constructor(private readonly dataBaseService: DataBaseService) {}
 

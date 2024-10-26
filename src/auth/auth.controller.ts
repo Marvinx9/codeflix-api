@@ -1,6 +1,5 @@
-import { Body, Controller, Post, Request, Response } from '@nestjs/common';
-import { LoginService } from './login/auth.service';
-import { LoginDto } from './dtos/login.dto';
+import { Controller, Post, Request } from '@nestjs/common';
+import { AuthService } from './login/auth.service';
 import {
     ApiOkResponse,
     ApiResponse,
@@ -8,7 +7,6 @@ import {
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginOutputDto } from './dtos/loginOutputDto';
-import { Response as ExpressResponse } from 'express';
 import { AuthRequest } from './dtos/AuthRequest';
 
 @Controller('auth')
@@ -20,7 +18,7 @@ export class AuthController {
 
     @Post('/login')
     @ApiUnauthorizedResponse({ description: 'Usuário ou senha incorretos!' })
-    async login(@Request() req: AuthRequest, @Response() res: ExpressResponse) {
-        return this.authService.login(req.user, res);
+    async login(@Request() req: AuthRequest) {
+        return this.authService.login(req.user);
     }
 }

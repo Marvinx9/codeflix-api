@@ -1,25 +1,27 @@
 import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { LoginService } from './login/auth.service';
-import { LoginController } from './auth.controller';
-import { IUserRepository } from '../usuario/services/repositories/user.repository';
-import { UserPrismaRepository } from '../usuario/services/repositories/user.prisma.repository';
+import { LocalStrategy } from './stategies/local.strategy';
+import { AuthService } from './login/auth.service';
+import { ValidateUsuarioRepository } from './validate/validateUsuario.repository';
+import { ValidateUsuarioService } from './validate/validateUsuario.service';
+import { DataBaseService } from 'src/shared/database/postgres/database.service';
 
 @Module({
     imports: [
+        PassportModule,
         JwtModule.register({
-            global: true,
             secret: process.env.JWT_SECRET,
-            signOptions: { expiresIn: '12h' },
+            signOptions: { expiresIn: '1h' },
         }),
     ],
-    controllers: [LoginController],
     providers: [
-        LoginService,
-        {
-            provide: IUserRepository,
-            useClass: UserPrismaRepository,
-        },
+        DataBaseService,
+        AuthService,
+        LocalStrategy,
+        ValidateUsuarioRepository,
+        ValidateUsuarioService,
     ],
+    exports: [AuthService],
 })
 export class AuthModule {}

@@ -2,14 +2,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 import { LoginOutputDto } from '../dtos/loginOutputDto';
 import { User } from '../dtos/authRequest';
-import { ValidateUsuarioService } from '../validate/validateUsuario.service';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly validateUsuarioService: ValidateUsuarioService,
-        private readonly jwtService: JwtService,
-    ) {}
+    constructor(private readonly jwtService: JwtService) {}
 
     async login(user: User): Promise<LoginOutputDto> {
         const payload = {
