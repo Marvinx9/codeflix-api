@@ -15,6 +15,5 @@ import { UsuarioModule } from './usuario/usuario.module';
         CategoryModule,
         AuthModule,
     ],
-    providers: [UsuarioModule, CategoryModule],
 })
 export class AppModule {}

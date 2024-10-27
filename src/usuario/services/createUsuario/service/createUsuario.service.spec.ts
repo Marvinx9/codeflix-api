@@ -1,72 +1,86 @@
-// import { Test } from '@nestjs/testing';
-// import { CreateUserService } from './createUsuario.service';
-// import { CreateUserInputDto } from '../dto/createUsuarioInput.dto';
-// import { IUserRepository } from './repositories/user.repository';
-// import { BadRequestException } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { CreateUsuarioService } from './createUsuario.service';
+import { CreateUsuarioRepository } from '../repositories/createUsuario.repository';
+import { CreateUsuarioInputDto } from '../dto/createUsuarioInput.dto';
+import {
+    BadRequestException,
+    InternalServerErrorException,
+} from '@nestjs/common';
 
-// describe('CreateUserService', () => {
-//     let sut: CreateUserService;
-//     let iUserRepository: IUserRepository;
+// Arrange Values
 
-//     beforeEach(async () => {
-//         const moduleRef = await Test.createTestingModule({
-//             providers: [
-//                 CreateUserService,
-//                 {
-//                     provide: IUserRepository,
-//                     useValue: {
-//                         findByUsernameOrEmail: jest.fn(),
-//                         save: jest.fn(),
-//                     },
-//                 },
-//             ],
-//         }).compile();
+const mockRequest: CreateUsuarioInputDto = {
+    email: 'email@test.com',
+    name: 'name test',
+    password: 'senha123',
+    username: 'username_test',
+};
 
-//         sut = moduleRef.get<CreateUserService>(CreateUserService);
-//         iUserRepository = moduleRef.get<IUserRepository>(IUserRepository);
-//     });
+describe('CreateUsuarioService', () => {
+    let sut: CreateUsuarioService;
+    let createUsuarioRepository: CreateUsuarioRepository;
 
-//     it('Should be defined', () => {
-//         expect(sut).toBeDefined();
-//         expect(iUserRepository).toBeDefined();
-//     });
+    beforeEach(async () => {
+        const app = await Test.createTestingModule({
+            providers: [
+                CreateUsuarioService,
+                {
+                    provide: CreateUsuarioRepository,
+                    useValue: {
+                        verifyDuplicity: jest.fn(),
+                        createUsuario: jest.fn(),
+                    },
+                },
+            ],
+        }).compile();
 
-//     it('Shoud be able to create a new user', async () => {
-//         // Arrange
-//         const data: CreateUserInputDto = {
-//             email: 'email@test.com',
-//             name: 'name test',
-//             password: '1234',
-//             username: 'username_test',
-//         };
+        sut = app.get<CreateUsuarioService>(CreateUsuarioService);
+        createUsuarioRepository = app.get<CreateUsuarioRepository>(
+            CreateUsuarioRepository,
+        );
+    });
 
-//         const response = await sut.execute(data);
+    describe('execute', () => {
+        it('Should be defined', () => {
+            expect(sut).toBeDefined();
+            expect(createUsuarioRepository).toBeDefined();
+        });
 
-//         // Assert
-//         expect(response).toBeUndefined();
-//     });
+        it('Shoud be able to create a new user', async () => {
+            const response = await sut.execute(mockRequest);
+            // Act & Assert
+            expect(
+                createUsuarioRepository.verifyDuplicity,
+            ).toHaveBeenCalledWith(mockRequest.email);
+            expect(response).toBeUndefined();
+        });
 
-//     it('Shoud throw BadRequestException if user already exists', async () => {
-//         // Arrange
-//         const data: CreateUserInputDto = {
-//             email: 'email@test.com',
-//             name: 'name test',
-//             password: '1234',
-//             username: 'username_test',
-//         };
+        it('Shoud throw BadRequestException if user already exists', async () => {
+            // Arrange
+            jest.spyOn(
+                createUsuarioRepository,
+                'verifyDuplicity',
+            ).mockResolvedValueOnce(1);
 
-//         jest.spyOn(
-//             iUserRepository,
-//             'findByUsernameOrEmail',
-//         ).mockResolvedValueOnce({
-//             ...data,
-//             id: '233',
-//             createdAt: new Date('2024-10-14'),
-//         });
+            // Act & Assert
+            await expect(sut.execute(mockRequest)).rejects.toStrictEqual(
+                new BadRequestException('Usuário já criado com esse e-mail'),
+            );
+        });
 
-//         // Assert
-//         await expect(sut.execute(data)).rejects.toStrictEqual(
-//             new BadRequestException('User already exists!'),
-//         );
-//     });
-// });
+        it('Shoud throw InternalServerErrorException if CreateUsuarioService throws', async () => {
+            // Arrange
+
+            jest.spyOn(
+                createUsuarioRepository,
+                'createUsuario',
+            ).mockRejectedValueOnce(new Error());
+            // Act & Assert
+            await expect(sut.execute(mockRequest)).rejects.toStrictEqual(
+                new InternalServerErrorException(
+                    'Ocorreu um erro ao criar o usuário. Tente novamente!',
+                ),
+            );
+        });
+    });
+});

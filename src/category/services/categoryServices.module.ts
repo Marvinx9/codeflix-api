@@ -5,7 +5,6 @@ import { CreateCategoryRepository } from './createCategory/repository/createCate
 
 @Module({
     controllers: [CategoryController],
-    imports: [],
     providers: [CreateCategoryService, CreateCategoryRepository],
 })
 export class CategoryServiceModule {}
