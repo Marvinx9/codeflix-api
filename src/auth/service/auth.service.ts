@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { User } from './dtos/currentUser.interface';
-import { UserPayload } from './dtos/userPayload';
 import { JwtService } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 import { ValidateUserService } from './validateUser.service';
 import { compare } from 'bcrypt';
-import { LoginOutputDto } from './dtos/loginOutput.dto';
+import { LoginOutputDto } from '../dtos/loginOutput.dto';
+import { UserPayload } from '../dtos/userPayload';
+import { User } from '../dtos/currentUser.interface';
 
 dotenv.config();
 

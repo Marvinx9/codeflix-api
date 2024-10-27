@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { LocalStrategy } from './stategies/local.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './stategies/jwt.strategy';
-import { ValidateUserService } from './validateUser.service';
-import { ValidateUserRepository } from './validateUser.repository';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { ValidateUserRepository } from './repository/validateUser.repository';
 import { DataBaseService } from 'src/shared/database/postgres/database.service';
 import * as dotenv from 'dotenv';
+import { AuthService } from './service/auth.service';
+import { ValidateUserService } from './service/validateUser.service';
 
 dotenv.config();
 @Module({
