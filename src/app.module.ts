@@ -3,7 +3,7 @@ import { CategoryModule } from './category/category.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { UsuarioModule } from './usuario/usuario.module';
+import { UserModule } from './user/usuario.module';
 
 @Module({
     imports: [
@@ -11,7 +11,7 @@ import { UsuarioModule } from './usuario/usuario.module';
         ConfigModule.forRoot({
             isGlobal: true,
         }),
-        UsuarioModule,
+        UserModule,
         CategoryModule,
         AuthModule,
     ],
