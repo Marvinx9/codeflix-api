@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginOutputDto {
-    @ApiProperty({ description: 'senha do usuário', example: 'senha.exemplo' })
+    @ApiProperty({ description: 'token de acesso', example: 'hashedsenha' })
     access_token: string;
 
     @ApiProperty({ description: 'identificador do usuário', example: '213874' })
