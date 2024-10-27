@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UploadBannerInputDto } from '../../uploadBanner/dto/uploadBannerInput.dto';
 
 export class CreateVideoInputDto {
     id?: string;
@@ -23,6 +24,9 @@ export class CreateVideoInputDto {
 
     @ApiProperty({ description: 'classificação indicada' })
     rating: Rating;
+
+    @ApiProperty({ description: 'banner do vídeo' })
+    banner?: UploadBannerInputDto;
 
     @ApiProperty({ description: 'id da categoria' })
     category_id: string[];
