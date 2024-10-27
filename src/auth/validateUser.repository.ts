@@ -2,18 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/shared/database/postgres/database.service';
 
 @Injectable()
-export class ValidateUsuarioRepository {
+export class ValidateUserRepository {
     constructor(private readonly dataBaseService: DataBaseService) {}
 
     async findByEmail(email: string): Promise<any> {
         const sql = `
             SELECT
                 *
-            FROM USUARIO
-            WHERE EMAIL LIKE '$1'
+            FROM USUARIOS
+            WHERE UPPER(EMAIL) = $1
           `;
-        const binds = [email];
+        const binds = [email.toUpperCase()];
 
-        return await this.dataBaseService.query(sql, binds);
+        const result = await this.dataBaseService.query(sql, binds);
+        return result[0] ?? undefined;
     }
 }

@@ -68,7 +68,7 @@ export class DataBaseService {
         }
     }
 
-    async query<T extends Record<string, unknown>>(
+    async query<T>(
         sql: string,
         binds: Record<string, any> = {},
         client?: PoolClient | null,
@@ -91,7 +91,7 @@ export class DataBaseService {
             let rows: T[] = [];
 
             if (result && result.rows && result.rows.length > 0) {
-                rows = result.rows.map((one: Record<string, unknown>) => {
+                rows = result.rows.map((one: T) => {
                     const newValues: Record<string, unknown> = {};
 
                     Object.keys(one).forEach(

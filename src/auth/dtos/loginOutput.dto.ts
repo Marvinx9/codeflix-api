@@ -15,4 +15,10 @@ export class LoginOutputDto {
         example: 'usuario@gmail.com',
     })
     email: string;
+
+    @ApiProperty({
+        description: 'perfil de acesso do usuário',
+        example: 'ADMIN',
+    })
+    perfil: string;
 }
