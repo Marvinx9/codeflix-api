@@ -6,17 +6,17 @@ import {
     Request,
     UseGuards,
 } from '@nestjs/common';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { AuthRequest } from './dtos/authRequest';
-import { AuthService } from './service/auth.service';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { AuthRequest } from '../dtos/authRequest';
+import { AuthService } from '../service/login/auth.service';
 import {
     ApiBody,
     ApiResponse,
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { LoginRequestBody } from './dtos/loginRequestBody';
-import { LoginOutputDto } from './dtos/loginOutput.dto';
+import { LoginRequestBody } from '../dtos/loginRequestBody';
+import { LoginOutputDto } from '../dtos/loginOutput.dto';
 
 @Controller('auth')
 @ApiTags('auth')

@@ -2,11 +2,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
-import { ValidateUserService } from './validateUser.service';
+import { ValidateUserService } from '../validateUser/validateUser.service';
 import { compare } from 'bcrypt';
-import { LoginOutputDto } from '../dtos/loginOutput.dto';
-import { UserPayload } from '../dtos/userPayload';
-import { User } from '../dtos/currentUser.interface';
+import { LoginOutputDto } from '../../dtos/loginOutput.dto';
+import { UserPayload } from '../../dtos/userPayload';
+import { User } from '../../dtos/currentUser.interface';
 
 dotenv.config();
 

@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { ValidateUserService } from './validateUser.service';
+import { ValidateUserService } from '../validateUser/validateUser.service';
 import { UnauthorizedException } from '@nestjs/common';
-import { User } from '../dtos/currentUser.interface';
-import { LoginOutputDto } from '../dtos/loginOutput.dto';
+import { User } from '../../dtos/currentUser.interface';
+import { LoginOutputDto } from '../../dtos/loginOutput.dto';
 import * as bcrypt from 'bcrypt';
 
 jest.mock('bcrypt', () => ({
