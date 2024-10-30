@@ -1,7 +1,7 @@
 import {
     Controller,
     Post,
-    Request,
+    Req,
     UploadedFile,
     UseGuards,
     UseInterceptors,
@@ -9,9 +9,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadBannerService } from '../services/uploadBanner/service/uploadBanner.service';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @Controller('video')
-@UseGuards(UseGuards)
+@UseGuards(JwtAuthGuard)
 @ApiTags('video')
 export class VideoController {
     constructor(private readonly uploadBannerService: UploadBannerService) {}
@@ -20,9 +22,9 @@ export class VideoController {
     @UseInterceptors(FileInterceptor('file'))
     async uploadBanner(
         @UploadedFile() file: Express.Multer.File,
-        @Request() req,
+        @Req() req: Request,
     ) {
-        console.log(req.header);
+        console.log(req.user?.id);
 
         return await this.uploadBannerService.execute(file, '1');
     }
