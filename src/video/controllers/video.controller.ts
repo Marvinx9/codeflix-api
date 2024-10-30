@@ -24,8 +24,6 @@ export class VideoController {
         @UploadedFile() file: Express.Multer.File,
         @Req() req: Request,
     ) {
-        console.log(req.user?.id);
-
-        return await this.uploadBannerService.execute(file, '1');
+        return await this.uploadBannerService.execute(file, req.user?.id);
     }
 }

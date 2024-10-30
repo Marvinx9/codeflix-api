@@ -13,14 +13,14 @@ export class UploadBannerService {
         created_by: string,
     ): Promise<void> {
         const { buffer, originalname, mimetype } = file;
-        // const id = uuidv4();
+        const id = uuidv4();
 
-        // return await this.uploadBannerRepository.save(
-        //     id,
-        //     buffer,
-        //     originalname,
-        //     mimetype,
-        //     created_by,
-        // );
+        return await this.uploadBannerRepository.save(
+            id,
+            buffer,
+            originalname,
+            mimetype,
+            created_by,
+        );
     }
 }
