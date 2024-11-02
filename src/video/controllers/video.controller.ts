@@ -1,8 +1,7 @@
 import {
     Controller,
-    Get,
-    Param,
     Post,
+    Query,
     Req,
     UploadedFile,
     UseGuards,
@@ -13,6 +12,9 @@ import { UploadBannerService } from '../services/uploadBanner/service/uploadBann
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Request } from 'express';
+import { UploadVideoService } from '../services/createVideo/service/uploadVideo.service';
+import * as multer from 'multer';
+import { UploadVideoInputDto } from '../services/createVideo/dto/uploadVideoInput.dto';
 
 @Controller('video')
 @UseGuards(JwtAuthGuard)
@@ -21,7 +23,6 @@ export class VideoController {
     constructor(
         private readonly uploadBannerService: UploadBannerService,
         private readonly uploadVideoService: UploadVideoService,
-        private readonly findVideoService: FindVideoService,
     ) {}
 
     @Post('upload-banner')
@@ -34,14 +35,18 @@ export class VideoController {
     }
 
     @Post('upload-video')
-    @UseInterceptors(FileInterceptor('file'))
-    async uploadVideo(@UploadedFile() file: Express.Multer.File) {
-        const video = await this.uploadVideoService.execute(file);
-        return { message: 'Video enviado com sucesso', video };
-    }
-
-    @Get('video/:id')
-    async findVideo(@Param('id') id: string) {
-        return await this.findVideoService.execute(id);
+    @UseInterceptors(
+        FileInterceptor('file', {
+            storage: multer.memoryStorage(),
+            limits: { fileSize: 100 * 1024 * 1024 },
+        }),
+    )
+    async uploadVideo(
+        @Query() data: UploadVideoInputDto,
+        @Req() req: Request,
+        @UploadedFile() file: Express.Multer.File,
+    ): Promise<void> {
+        data.created_by = req.user.id;
+        return await this.uploadVideoService.execute(file, data);
     }
 }
